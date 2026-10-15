@@ -1,0 +1,342 @@
+<!DOCTYPE html>
+<html lang="pl">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Matura – plan nauki</title>
+<style>
+:root{--bg:#f6f7fb;--card:#fff;--tx:#1c2033;--mu:#636a85;--bd:#e2e5f0;--ac:#4f46e5;--ok:#16a34a;
+box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){--bg:#10121c;--card:#191c2b;--tx:#e8eaf5;--mu:#98a0bd;--bd:#2a2e44;--ac:#8b85ff;--ok:#4ade80}}
+:root[data-theme="dark"]{--bg:#10121c;--card:#191c2b;--tx:#e8eaf5;--mu:#98a0bd;--bd:#2a2e44;--ac:#8b85ff;--ok:#4ade80}
+html{scroll-padding-top:env(safe-area-inset-top,0px)}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--tx);font-family:system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;line-height:1.45}
+.w{max-width:820px;margin:0 auto;padding:20px 16px 60px}
+h1{font-size:1.6rem;margin:0 0 4px}
+.sub{color:var(--mu);margin:0 0 16px;font-size:.92rem}
+.sub a,.lnk{color:var(--ac)}
+.top{position:sticky;top:env(safe-area-inset-top,0px);background:var(--bg);padding:10px 0;z-index:5}
+.bar{height:12px;background:var(--bd);border-radius:99px;overflow:hidden}
+.bar i{display:block;height:100%;width:0;background:var(--ok);transition:width .3s}
+.st{display:flex;flex-wrap:wrap;gap:6px 16px;margin-top:8px;font-size:.88rem;color:var(--mu)}
+.st b{color:var(--tx)}
+.fl{display:flex;flex-wrap:wrap;gap:6px;margin-top:10px}
+button{font:inherit;border:1px solid var(--bd);background:var(--card);color:var(--tx);border-radius:99px;padding:5px 12px;cursor:pointer}
+button.on{background:var(--ac);border-color:var(--ac);color:#fff}
+.it{display:flex;gap:12px;align-items:flex-start;background:var(--card);border:1px solid var(--bd);border-radius:12px;padding:12px 14px;margin:10px 0}
+.it.done{opacity:.6}.it.done .nm{text-decoration:line-through}
+.n{color:var(--mu);font-weight:700;min-width:1.8em}
+input[type=checkbox]{width:22px;height:22px;margin-top:2px;accent-color:var(--ok);flex:none}
+.bd{flex:1;min-width:0}
+.nm{font-weight:600}
+.mt{display:flex;flex-wrap:wrap;gap:4px 10px;font-size:.82rem;color:var(--mu);margin-top:3px;align-items:center}
+.t{font-weight:700;color:#fff;border-radius:6px;padding:0 7px}
+.tD{background:#6b7280}.tSp{background:#dc2626}.tS{background:#ea580c}.tA{background:#ca8a04}.tB{background:#2563eb}.tC{background:#6b7280}
+.tabs{display:flex;flex-wrap:wrap;gap:6px;margin:0 0 12px}
+.hd{margin:22px 0 4px;font-weight:700;color:var(--mu);font-size:.8rem;text-transform:uppercase;letter-spacing:.04em}
+.ft{margin-top:24px;color:var(--mu);font-size:.8rem}
+</style>
+</head>
+<body>
+<div class="w">
+<h1>🎓 Matura – plan nauki</h1>
+<div class="tabs" id="tb"></div>
+<p class="sub" id="nt"></p>
+<div class="top">
+<div class="bar"><i id="pb"></i></div>
+<div class="st"><span>Zrobione: <b id="s1">0/36</b></span><span>Postęp: <b id="s2">0%</b></span><span>Zostało nauki: <b id="s3">0 h</b></span></div>
+<div class="fl" id="fl"></div>
+</div>
+<div id="ls"></div>
+<p class="ft">Tiery i czasy nauki to orientacyjne szacunki; „szansa" jest tylko przy matematyce (tier listy matemaks.pl).</p>
+</div>
+<script>
+var B="https://matematykaszkolna.pl/strona/",M=B+"3549.html";
+// [nazwa,tier,h,szansa,[zamkniete:[etykieta,id]],[otwarte:[etykieta,id]]]
+var T0=[
+["Potęgi i pierwiastki","S+",2,100,[["Potęgi i pierwiastki",2641]],[]],
+["Wyrażenia algebraiczne i wzory skróconego mnożenia","S",1,90,[["Wyrażenia algebraiczne i wzory skr. mnożenia",3079]],[["Wyrażenia algebraiczne i wzory skr. mnożenia",3064]]],
+["Procenty (w tym procent składany)","A",2,50,[["Procenty",2640],["Kapitalizacja odsetek",7040]],[["Procenty",3062]]],
+["Nierówność liniowa","S+",1,50,[["Równania i nierówności liniowe",6841]],[]],
+["Funkcja liniowa i miejsce zerowe","S",1,100,[["Własności f. liniowej – wzór",3023],["Własności f. liniowej – wykres",2644]],[["Funkcja liniowa",2642]]],
+["Układ równań liniowych","A",2,50,[["Układy równań liniowych",4732]],[]],
+["Zadanie z treścią na układ równań","B",5,80,[],[["Zadania tekstowe",7093],["Średnia prędkość",2649]]],
+["Wartość bezwzględna – opuszczanie i równanie","S+",1,60,[["Wartość bezwzględna",5048]],[]],
+["Odczytywanie informacji z wykresu funkcji","S+",2,100,[["Własności funkcji",4503]],[["Własności funkcji na podstawie wykresu",3024]]],
+["Nierówność kwadratowa","S",3,100,[],[["Nierówności kwadratowe",2668]]],
+["Funkcja kwadratowa – miejsca zerowe, wierzchołek, oś symetrii","S",5,100,[["Funkcja kwadratowa",2645],["Praktyczne zastosowanie f. kwadratowej",7822]],[["Własności f. kwadratowej",3068],["Praktyczne zastosowanie f. kwadratowej",2677],["F. kwadratowa z parametrem",3070]]],
+["Równanie w postaci iloczynowej","S+",1,80,[["Równania kwadratowe i wyższych stopni",2646]],[["Równania z iloczynem nawiasów",2650]]],
+["Wielomiany","B",2,15,[],[]],
+["Wyrażenia wymierne i równanie wymierne","S",3,60,[],[["Równania wymierne",7487]]],
+["Logarytmy","S+",2,100,[],[["Logarytmy",3075]]],
+["Funkcja wykładnicza i logarytmiczna – obliczanie wartości","B",2,15,[],[["Funkcja wykładnicza",3022]]],
+["Funkcja odwrotnie proporcjonalna","B",1,15,[["Proporcjonalność prosta i odwrotna",7094]],[]],
+["Przesunięcia wykresów funkcji","A",1,80,[["Przesuwanie wykresu funkcji",3057]],[]],
+["Ciąg dany wzorem ogólnym lub rekurencyjnym","S+",1,100,[],[["Wzór ciągu",3063]]],
+["Ciąg arytmetyczny – wzór ogólny, suma, 3 kolejne wyrazy","S+",2,100,[],[["Ciąg arytmetyczny",2670]]],
+["Ciąg geometryczny – wzór ogólny, suma, 3 kolejne wyrazy","S",2,100,[],[["Ciąg geometryczny",3074]]],
+["Statystyka – dominanta, mediana i średnia arytmetyczna","S",2,100,[],[]],
+["Kombinatoryka","C",4,100,[],[]],
+["Prawdopodobieństwo","B",2,100,[],[]],
+["Długość i środek odcinka","S+",1,90,[],[]],
+["Proste równoległe","S+",1,90,[["Proste równoległe",5352],["Proste prostopadłe",3078]],[]],
+["Równanie okręgu","S",2,100,[],[]],
+["Kąty środkowe i wpisane w okręgu","S+",1,100,[],[]],
+["Trygonometria – obliczanie i upraszczanie wyrażeń","A",3,100,[],[]],
+["Trójkąty, trapezy, Pitagoras, Tales, podobieństwo, okręgi opisane i wpisane","A",10,100,[],[]],
+["Twierdzenie cosinusów","A",1,30,[],[]],
+["Prostopadłościany i ostrosłupy","B",10,100,[],[]],
+["Walce i stożki","A",3,100,[],[]],
+["Geometria analityczna w zadaniu za 3–4 punkty","B",5,30,[],[]],
+["Dowód z podzielnością lub resztą","B",4,100,[],[["Dowody podzielności liczb",6563],["Udowodnij, uzasadnij, wykaż",2669]]],
+["Optymalizacja","S",5,100,[],[]]
+];
+var T1=[
+["Logarytmy – zamiana podstaw","S",2,70,[],[]],
+["Równanie lub nierówność z wartościami bezwzględnymi","S+",1,50,[],[]],
+["Funkcja wykładnicza – zadania praktyczne","A",3,90,[],[]],
+["Równanie kwadratowe z parametrem, wzory Viète'a","S",5,100,[],[]],
+["Dowód algebraiczny","B",5,50,[],[]],
+["Ciąg arytmetyczny i geometryczny lub szereg","S+",5,100,[],[]],
+["Równanie trygonometryczne","S",10,100,[],[]],
+["Geometria analityczna","S",10,100,[],[]],
+["Granice","A",2,50,[],[]],
+["Pochodne, styczna do wykresu, ekstrema, wielomiany","S",5,70,[],[]],
+["Zadanie optymalizacyjne","S+",5,100,[],[]],
+["Prawdopodobieństwo (klasyczne, warunkowe, Bayes, Bernoulli)","B",10,100,[],[]],
+["Kombinatoryka","D",10,40,[],[]],
+["Geometria przestrzenna","B",20,90,[],[]],
+["Geometria płaska i dowód z geometrii","C",20,100,[],[]]
+];
+var O="https://opinieouczelniach.pl/artykul/",AR="https://www.otouczelnie.pl/artykul/28730/Arkusze-maturalne-jezyk-angielski-PDF-i-odpowiedzi/2098/arkusz-matura/2023/formula-2023";
+function A(u,t){return '<a href="'+u+'" target="_blank" rel="noopener">'+t+'</a>'}
+function H(t){return {h:t}}
+function G(n,t,h,l){return [n,t,h,null,[],[],l||[]]}
+function K(n,t,h,s){return [n,t,h,null,[],[],[["Opracowanie",O+s+"/"]]]}
+var Z="https://zadania.dlamaturzysty.info/s/5003/81002-angielski/",ZP="https://zadania.dlamaturzysty.info/s/5002/81000-jezyk-polski/",ZB="https://zadania.dlamaturzysty.info/s/5003/81002-angielski.htm",ZPB="https://zadania.dlamaturzysty.info/s/5002/81000-jezyk-polski.htm";
+var LSL=["Słuchanie – zadania",Z+"4533696-jezyk-angielski-rozumienie-ze-sluchu-zadania-na-poziomie-podstawowym.htm?c1=56422"],
+LCZ=["Czytanie – zadania",Z+"6149872-jezyk-angielski-rozumienie-tekstow-pisanych-poziom-podstawowy.htm?c1=56422"],
+LDOB=["Dobieranie nagłówków",Z+"4510941-jezyk-angielski-zadania-na-dobieranie-naglowkow-na-poziomie-podstawowym.htm?c1=56422"],
+LWWC=["Wielokrotny wybór – czytanie",Z+"4510943-jezyk-angielski-zadania-wielokrotnego-wyboru-na-poziomie-podstawowym-rozumienie-tekstow.htm?c1=56422"],
+LSJ=["Środki językowe – zadania",Z+"6149873-jezyk-angielski-znajomosc-srodkow-jezykowych-poziom-podstawowy.htm?c1=56422"],
+LLUK=["Uzupełnianie luk",Z+"4510942-jezyk-angielski-uzupelnianie-luk-w-tekscie-na-poziomie-podstawowym.htm?c1=56422"],
+LWWS=["Wielokrotny wybór – środki językowe",Z+"4510944-jezyk-angielski-zadania-wielokrotnego-wyboru-na-poziomie-podstawowym-znajomosc-srodkow.htm?c1=56422"],
+LWP=["Wypowiedź pisemna – zadania",Z+"4510945-jezyk-angielski-zadania-wypowiedz-pisemna-poziom-podstawowy.htm?c1=56422"],
+LPRZ=["Przykładowe zadania (9)",Z+"5051486-jezyk-angielski-przykladowe-zadania-poziom-podstawowy.htm?c1=56422"],
+LEPR=["Zadania PR (filtr „rozszerzony”)",ZB],
+LUZ=["Język polski w użyciu (23 zadania)",ZP+"5837260-jezyk-polski-przykladowe-zadania-jezyk-polski-w-uzyciu-poziom-podstawowy.htm?c1=56424"],
+LZ1=["Zestaw 1 (Głowacki)",ZP+"5051398-jezyk-polski-przykladowe-zadania-zestaw-1-poziom-podstawowy.htm?c1=56424"],
+LZ2=["Zestaw 2 (Miodek)",ZP+"5051400-jezyk-polski-przykladowe-zadania-zestaw-2-poziom-podstawowy.htm?c1=56424"],
+LZ3=["Zestaw 3 (Stachówna)",ZP+"5051408-jezyk-polski-przykladowe-zadania-zestaw-3-poziom-podstawowy.htm?c1=56424"],
+LZ4=["Zestaw 4 (Ingarden, Jan Paweł II)",ZP+"5051410-jezyk-polski-przykladowe-zadania-zestaw-4-poziom-podstawowy.htm?c1=56424"],
+LRZ=["Przykładowe rozprawki (8)",ZP+"5051415-jezyk-polski-przykladowe-rozprawki-poziom-podstawowy.htm?c1=56424"],
+L14=["Przykładowe teksty (14)",ZP+"4510932-jezyk-polski-przykladowe-zadania-na-poziomie-podstawowym.htm?c1=56424"],
+LPRP=["Zadania PR (filtr „rozszerzony”)",ZPB];
+var T2=[
+H("Gramatyka (poziom B1)"),
+G("Present simple i continuous, czasowniki statyczne","S+",2,[LSJ,LWWS]),
+G("Past simple, past continuous, used to","S+",2,[LSJ,LWWS]),
+G("Present perfect (simple i continuous) a past simple","S+",3,[LSJ,LWWS]),
+G("Past perfect","S",2,[LSJ,LWWS]),
+G("Przyszłość: will, going to, Present Continuous","S",2,[LSJ,LWWS]),
+G("Okresy warunkowe 0, 1, 2 i 3","S+",3,[LSJ,LWWS]),
+G("Strona bierna","S",2,[LSJ,LWWS]),
+G("Mowa zależna","S",3,[LSJ,LWWS]),
+G("Czasowniki modalne","S",3,[LSJ,LWWS]),
+G("Rzeczowniki policzalne i niepoliczalne, quantifiers, przedimki","A",2,[LSJ,LWWS]),
+G("Stopniowanie przymiotników i przysłówków, so/such, too/enough","A",2,[LSJ,LWWS]),
+G("Zdania względne, gerund i bezokolicznik, przyimki","A",3,[LSJ,LWWS]),
+H("Słownictwo tematyczne"),
+G("Człowiek, dom, rodzina i życie towarzyskie","S+",3,[LSJ,LWWS]),
+G("Szkoła i praca","S+",3,[LSJ,LWWS]),
+G("Żywienie, zakupy i usługi","S",3,[LSJ,LWWS]),
+G("Podróżowanie i turystyka, kultura, sport","S",4,[LSJ,LWWS]),
+G("Zdrowie, nauka i technika, świat przyrody, państwo i społeczeństwo","S",4,[LSJ,LWWS]),
+H("Arkusz – typy zadań"),
+G("Słuchanie: 15 zadań, ok. 25 min (dobieranie, wybór wielokrotny, P/F, luki)","S",4,[LSL,["Arkusze",AR]]),
+G("Czytanie: 20 zadań, teksty 1100–1500 wyrazów","S",4,[LCZ,LDOB,LWWC,["Arkusze",AR]]),
+G("Środki językowe: 13 zadań (luki, transformacje, słowotwórstwo, tłumaczenie)","A",4,[LSJ,LLUK,LWWS,["Arkusze",AR]]),
+G("Wypowiedź pisemna 100–150 wyrazów: list, wpis na blogu lub forum (12 pkt)","S+",5,[LWP,["Opis egzaminu",O+"matura-pisemna-z-jezyka-angielskiego-na-poziomie-podstawowym/"]]),
+G("Pełne arkusze na czas (120 min)","A",6,[LPRZ,["Arkusze",AR]])
+];
+var T3=[
+H("Gramatyka zaawansowana"),
+G("Inwersja, wish i if only, tryb przypuszczający","S",4),
+G("Mieszane okresy warunkowe, struktury causative","S",3),
+G("Modale perfect, imiesłowy i zdania skrócone","A",4),
+G("Rzeczowniki, przedimki, quantifiers na poziomie zaawansowanym","A",3),
+H("Słownictwo i kolokacje"),
+G("Słownictwo rozszerzone: tematy z podstawy plus ekonomia, media, środowisko","S",8),
+G("Phrasal verbs","A",6),
+G("Idiomy i kolokacje","A",5),
+G("Słowotwórstwo","A",3),
+H("Arkusz – typy zadań (sprawdź układ w informatorze CKE)"),
+G("Słuchanie, w tym zadania otwarte","S",6,[LEPR,["Arkusze",AR]]),
+G("Czytanie: dopasowania i pytania otwarte","S",6,[LEPR,["Arkusze",AR]]),
+G("Transformacje i tłumaczenie","A",4,[LEPR,["Arkusze",AR]]),
+G("Wypowiedź pisemna: rozprawka, artykuł, list formalny","S+",10,[LEPR]),
+G("Pełne arkusze na czas","A",6,[LEPR,["Arkusze",AR]])
+];
+var T4=[
+H("Wypracowanie"),
+G("Rozprawka: teza, argumenty, wnioski, kompozycja","S+",8,[LRZ,["Jak napisać wypracowanie",O+"matura-jak-dobrze-napisac-wypracowanie/"]]),
+G("Odwołania do lektur i kontekstów w argumentacji","S+",4),
+G("Błąd rzeczowy i kardynalny (czego unikać)","S",2,[["Błąd rzeczowy",O+"matura-blad-rzeczowy-na-maturze/"],["Błąd kardynalny",O+"matura-blad-kardynalny-na-maturze/"]]),
+H("Czytanie i analiza tekstów"),
+G("Tekst nieliteracki: publicystyka, popularnonaukowy, argumentacja","S",5,[LZ1,LZ2,LZ3,LZ4]),
+G("Analiza i interpretacja wiersza","S",6,[L14]),
+G("Środki stylistyczne: metafora, epitet, porównanie, personifikacja, apostrofa, anafora, ironia","S",3,[L14]),
+G("Test historycznoliteracki: fragmenty epiki i dramatu","A",4,[L14,["Opis testu",O+"matura-z-jezyka-polskiego-test-historycznoliteracki/"]]),
+H("Wiersze z podstawy programowej"),
+G("Bogurodzica","A",1),
+G("Kochanowski: Pieśń IX (ks. I), Pieśń V (ks. II), treny IX, X, XI","A",2),
+G("Krasicki: Hymn do miłości ojczyzny","B",1),
+G("Mickiewicz: Oda do młodości","A",1),
+G("Słowacki: Testament mój","A",1),
+H("Epoki literackie"),
+G("Starożytność","A",1),G("Średniowiecze","A",1),G("Renesans","A",1),G("Barok","A",1),G("Oświecenie","A",1),
+G("Romantyzm","S",2),G("Pozytywizm","A",1),G("Młoda Polska","A",1),G("Dwudziestolecie międzywojenne","A",1),
+G("Wojna i okupacja","A",1),G("Literatura współczesna","B",1),
+H("Język"),
+G("Funkcje języka i styl wypowiedzi","A",2,[LUZ,LZ2]),
+G("Błędy językowe, manipulacja, perswazja","A",3,[LUZ]),
+G("Ortografia i interpunkcja","A",3,[LUZ]),
+H("Lektury obowiązkowe – matura 2027 (podstawa programowa 2024)"),
+K("Biblia: Rodzaju, Hioba, Koheleta, Psalmy, Apokalipsa","S+",4,"biblia-opracowanie-lektury"),
+K("Jan Parandowski, Mitologia, cz. I Grecja","S+",3,"mitologia-grecka-opracowanie-lektury"),
+K("Homer, Iliada (fragmenty)","A",2,"iliada-opracowanie-lektury"),
+K("Sofokles, Antygona","S+",2,"antygona-opracowanie-lektury"),
+K("Lament świętokrzyski (fragmenty)","B",1,"lament-swietokrzyski-opracowanie-lektury"),
+K("Rozmowa Mistrza Polikarpa ze Śmiercią (fragmenty)","B",1,"rozmowa-mistrza-polikarpa-ze-smiercia-opracowanie-lektury"),
+K("Pieśń o Rolandzie (fragmenty)","B",1,"piesn-o-rolandzie-opracowanie-lektury"),
+K("Szekspir, Makbet","S+",3,"makbet-opracowanie-lektury"),
+K("Molier, Skąpiec","S",2,"skapiec-molier-opracowanie-lektury"),
+K("Krasicki, wybrana satyra","A",1,"satyry-krasickiego-opracowanie-lektury"),
+K("Mickiewicz, ballady, w tym Romantyczność","S",2,"romantycznosc-i-inne-ballady-opracowanie-lektury"),
+K("Mickiewicz, Dziady cz. III","S+",4,"dziady-cz-iii-opracowanie-lektury"),
+K("Prus, Lalka","S+",8,"lalka-opracowanie-lektury"),
+K("Sienkiewicz, Potop (fragmenty)","A",3,"potop-opracowanie-lektury"),
+K("Dostojewski, Zbrodnia i kara","S+",6,"zbrodnia-i-kara-opracowanie-lektury"),
+K("Wyspiański, Wesele","S+",3,"wesele-opracowanie-lektury"),
+K("Reymont, Chłopi (fragmenty)","S",4,"chlopi-opracowanie-lektury"),
+K("Żeromski, Przedwiośnie","S",4,"przedwiosnie-opracowanie-lektury"),
+K("Gombrowicz, Ferdydurke (fragmenty)","S",3,"ferdydurke-opracowanie-lektury"),
+K("Borowski, Proszę państwa do gazu","S+",3,"prosze-panstwa-do-gazu-opracowanie-lektury"),
+K("Herling-Grudziński, Inny świat (fragmenty)","S",3,"inny-swiat-opracowanie-lektury"),
+K("Hanna Krall, Zdążyć przed Panem Bogiem","A",2,"zdazyc-przed-panem-bogiem-opracowanie-lektury"),
+K("Camus, Dżuma","S",4,"dzuma-opracowanie-lektury"),
+K("Orwell, Rok 1984","S",5,"rok-1984-opracowanie-lektury"),
+K("Mrożek, Tango","S",2,"tango-opracowanie-lektury"),
+K("Nowakowski, Górą „Edek”","B",1,"gora-edek-opracowanie-lektury"),
+K("Stasiuk, Miejsce","B",1,"miejsce-stasiuk-opracowanie-lektury"),
+K("Tokarczuk, Profesor Andrews w Warszawie","B",1,"profesor-andrews-w-warszawie-opracowanie-lektury"),
+K("Kapuściński, Podróże z Herodotem (fragmenty)","A",3,"podroze-z-herodotem-opracowanie-lektury"),
+H("Lektury z zakresu szkoły podstawowej (też do testu i wypracowania)"),
+K("Krasicki, bajki","B",1,"bajki-krasickiego-opracowanie"),
+K("Mickiewicz, Dziady cz. II","A",2,"dziady-cz-ii-opracowanie-lektury"),
+K("Mickiewicz, Pan Tadeusz (księgi I, II, IV, X, XI, XII)","S",5,"pan-tadeusz-opracowanie-lektury"),
+K("Fredro, Zemsta","B",2,"zemsta-fredry-opracowanie-lektury"),
+K("Słowacki, Balladyna","B",2,"balladyna-opracowanie-lektury"),
+H("Lektury zakresu rozszerzonego (do wypracowania na PR)"),
+K("Homer, Odyseja (fragmenty)","B",2,"odyseja-opracowanie-lektury"),
+K("Dante, Boska Komedia (fragmenty)","B",3,"boska-komedia-opracowanie-lektury"),
+K("Kochanowski, Treny (cały cykl)","A",3,"treny-kochanowskiego-opracowanie-lektury"),
+K("Szekspir, Hamlet","A",4,"hamlet-opracowanie-lektury"),
+K("Słowacki, Kordian","A",4,"kordian-opracowanie-lektury"),
+G("Powieść realistyczna lub naturalistyczna do wyboru: Ojciec Goriot, Klub Pickwicka, Martwe dusze lub Pani Bovary","B",8,[["Ojciec Goriot",O+"ojciec-goriot-opracowanie-lektury/"],["Klub Pickwicka",O+"klub-pickwicka-opracowanie-lektury/"],["Martwe dusze",O+"martwe-dusze-opracowanie-lektury/"],["Pani Bovary",O+"pani-bovary-opracowanie-lektury/"]]),
+K("Kafka, Proces (fragmenty)","B",3,"proces-opracowanie-lektury"),
+K("Bułhakow, Mistrz i Małgorzata","A",8,"mistrz-i-malgorzata-opracowanie-lektury"),
+K("Witkiewicz, Szewcy","B",2,"szewcy-opracowanie-lektury"),
+K("Schulz, wybrane opowiadania ze Sklepów cynamonowych","B",3,"sklepy-cynamonowe-opracowanie-lektury"),
+K("Konwicki, Mała Apokalipsa","B",3,"mala-apokalipsa-opracowanie-lektury"),
+K("Głowacki, Antygona w Nowym Jorku","B",2,"antygona-w-nowym-jorku-opracowanie-lektury"),
+G("Mrożek, wybrane opowiadanie, oraz wybrany esej Herlinga-Grudzińskiego lub Herberta","C",3),
+H("Inne lektury, nieobowiązkowe (podstawa programowa 2018)"),
+G("Zakres podstawowy: Legenda o św. Aleksym, Kwiatki św. Franciszka, Gall Anonim, Odprawa posłów greckich, Skarga, Pasek, Konrad Wallenrod, Z legend dawnego Egiptu, Gloria victis, Rozdzióbią nas kruki, Ludzie którzy szli, Droga donikąd, Raport o stanie wojennym, Katedra, Madame","D",10),
+K("Szekspir, Romeo i Julia","C",3,"romeo-i-julia-opracowanie-lektury"),
+G("Zakres rozszerzony: Arystoteles, Platon, Arystofanes, Wergiliusz, Augustyn, Tomasz z Akwinu, Rabelais, Montaigne, Lilla Weneda, Nie-Boska Komedia, Noc listopadowa, Borges","D",10)
+];
+var T5=[
+H("Rozmowa wstępna i przebieg egzaminu (15 min, bez określania poziomu)"),
+G("Rozmowa wstępna ok. 2 min: opowiadanie o sobie, zainteresowaniach i życiu","S+",3,[["Opis egzaminu",O+"matura-egzaminy-ustne/"]]),
+G("Kryteria oceny: komunikacja (3×6 pkt), zakres, poprawność, wymowa, płynność (razem 30)","S",1,[["Opis egzaminu",O+"matura-egzaminy-ustne/"]]),
+H("Zadania z zestawu"),
+G("Zadanie 1: rozmowa z odgrywaniem ról (reagowanie, pytania, prośby, propozycje)","S+",5),
+G("Zadanie 2: opis ilustracji i odpowiedzi na pytania egzaminującego","S+",5),
+G("Zadanie 3: wypowiedź na podstawie materiału stymulującego i 2 pytania","S",5),
+H("Przygotowanie"),
+G("Zwroty do opisu ilustracji (położenie, czynności, nastrój, przypuszczenia)","S+",3),
+G("Zwroty do wyrażania opinii, zgody, sprzeciwu, preferencji, porównań","S",3),
+G("Słownictwo tematyczne do mówienia (14 tematów z podstawy programowej)","S",6),
+G("Wymowa i płynność: nagrywanie siebie, radzenie sobie z brakiem słowa","A",4),
+G("Symulacja pełnego egzaminu na czas (15 min) z kimś lub nagrywana","S+",4)
+];
+var T6=[
+H("Przebieg: 15 min przygotowania, 10 min wypowiedzi, 5 min rozmowy"),
+G("Zapoznanie z formułą i kryteriami (30 pkt, próg 30 proc.)","S+",1,[["Opis egzaminu",O+"matura-egzaminy-ustne/"]]),
+G("Lista pytań jawnych: wszystkie polecenia do lektur obowiązkowych","S+",10,[["Pytania jawne",O+"matura-pytania-jawne-na-egzamin-ustny-z-jezyka-polskiego/"]]),
+G("Opracowania lektur pod wypowiedź ustną","S",8,[["Opracowania lektur",O+"matura-opracowania-lektur/"],["Lista lektur",O+"matura-lista-lektur-obowiazkowych/"]]),
+H("Zadanie 2 (niejawne)"),
+G("Interpretacja fragmentu tekstu literackiego, zadania z zakresu literatury, języka lub kultury","S",5),
+G("Analiza materiału ikonograficznego i innych tekstów kultury (obraz, plakat, film, fotografia)","S",5),
+H("Wypowiedź"),
+G("Kompozycja monologu: wstęp, teza, argumenty, podsumowanie (4 pkt)","S+",3),
+G("Rozmowa z komisją: odpowiadanie na pytania do wypowiedzi (6 pkt)","S",3),
+G("Zakres i poprawność języka, radzenie sobie z tremą","A",3),
+G("Symulacja całego egzaminu na czas, nagrywana lub z osobą","S+",5)
+];
+var TABS=[
+{n:"Matematyka PP",t:T0,m:1,note:'Uczysz się z zadań maturalnych (do 2020 r.), więc przy każdym temacie masz linki do zadań zamkniętych i otwartych z '+A("https://matematykaszkolna.pl/strona/3549.html","matematykaszkolna.pl")+'. Kolejność moja, tiery i „szansa" z '+A("https://www.matemaks.pl/notatki/tier-lista-pp.pdf","tier listy matemaks.pl")+'.'},
+{n:"Matematyka PR",t:T1,note:'Zagadnienia i tiery z '+A("https://www.matemaks.pl/notatki/tier-lista-pr.pdf","tier listy matemaks.pl (rozszerzenie)")+', kolejność nauki moja. „20 h" i „10 h" to dolne szacunki. Linków do zadań jeszcze nie ma.'},
+{n:"Angielski PP",t:T2,note:'Własny plan według struktury arkusza z '+A(O+"matura-pisemna-z-jezyka-angielskiego-na-poziomie-podstawowym/","opisu matury 2027")+' (poziom B1). Tiery i czasy to moje szacunki. Zadania z odpowiedziami: '+A(ZB,"zadania.dlamaturzysty.info")+'. Arkusze: '+A(AR,"otouczelnie.pl")+'.'},
+{n:"Angielski PR",t:T3,note:'Własny plan: rozszerzenie opiera się na podstawie, a dochodzą trudniejsza gramatyka, słownictwo i dłuższe formy pisemne. Układ arkusza PR sprawdź w informatorze CKE. Zadania PR: '+A(ZB,"zadania.dlamaturzysty.info")+' (filtr „rozszerzony”). Tiery i czasy to moje szacunki. Arkusze: '+A(AR,"otouczelnie.pl")+'.'},
+{n:"Polski PP",t:T4,note:'Własny plan. Lista lektur jest dla matury 2027 (podstawa programowa 2024), źródło: '+A(O+"matura-lista-lektur-obowiazkowych/","opinieouczelniach.pl")+'. Jeśli zdajesz w innym roku, porównaj ją z komunikatem CKE. Zadania z odpowiedziami: '+A(ZPB,"zadania.dlamaturzysty.info")+'. Tiery i czasy to moje szacunki.'},
+{n:"Ustny angielski",t:T5,note:'Egzamin obowiązkowy, 15 min, bez określania poziomu, wymagane 30 proc. (9 z 30 pkt). Format według '+A(O+"matura-egzaminy-ustne/","opisu matur ustnych 2027")+'. Tiery i czasy to moje szacunki.'},
+{n:"Ustny polski",t:T6,note:'Egzamin obowiązkowy, 30 min, wymagane 30 proc. (9 z 30 pkt). Format według '+A(O+"matura-egzaminy-ustne/","opisu matur ustnych 2027")+', pytania jawne: '+A(O+"matura-pytania-jawne-na-egzamin-ustny-z-jezyka-polskiego/","lista")+'. Tiery i czasy to moje szacunki.'}
+];
+var K="matura-v2",cur=0,flt="all",ST={};
+try{ST=JSON.parse(localStorage.getItem(K)||"null")||{};if(!localStorage.getItem(K)){var o=localStorage.getItem("matura-pp-v1");if(o)ST={0:JSON.parse(o)}}}catch(e){ST={}}
+function save(){try{localStorage.setItem(K,JSON.stringify(ST))}catch(e){}}
+function cls(t){return t==="S+"?"tSp":"t"+t}
+function lnk(arr){return arr.map(function(l){var u=typeof l[1]==="number"?B+l[1]+".html":l[1];return '<a class="lnk" href="'+u+'" target="_blank" rel="noopener">'+l[0]+' ↗</a>'}).join(" · ")}
+function render(){
+ var tab=TABS[cur],T=tab.t,done=ST[cur]=ST[cur]||{},h="",d=0,rem=0,tot=0,n=0,ph=null;
+ document.getElementById("nt").innerHTML=tab.note;
+ T.forEach(function(x,i){
+  if(x.h){ph=x.h;return}
+  n++;var c=!!done[i];if(c)d++;else rem+=x[2];tot+=x[2];
+  if(flt!=="all"&&x[1]!==flt)return;
+  if(ph){h+='<div class="hd">'+ph+'</div>';ph=null}
+  var lk="";
+  if(x[4].length)lk+='<div class="mt"><b>Zamknięte:</b> '+lnk(x[4])+'</div>';
+  if(x[5].length)lk+='<div class="mt"><b>Otwarte:</b> '+lnk(x[5])+'</div>';
+  if(x[6]&&x[6].length)lk+='<div class="mt"><b>Materiały:</b> '+lnk(x[6])+'</div>';
+  if(tab.m&&!x[4].length&&!x[5].length)lk='<div class="mt"><a class="lnk" href="'+M+'" target="_blank" rel="noopener">Zadania: znajdź temat w tabeli ↗</a></div>';
+  h+='<div class="it'+(c?' done':'')+'"><span class="n">'+n+'</span><input type="checkbox" data-i="'+i+'"'+(c?' checked':'')+' aria-label="Zrobione"><div class="bd"><div class="nm">'+x[0]+'</div><div class="mt"><span class="t '+cls(x[1])+'">'+x[1]+'</span><span>⏱ '+x[2]+' h</span>'+(x[3]!=null?'<span>🎯 szansa '+x[3]+'%</span>':'')+'</div>'+lk+'</div></div>';
+ });
+ document.getElementById("ls").innerHTML=h;
+ var pc=n?Math.round(d/n*100):0;
+ document.getElementById("pb").style.width=pc+"%";
+ document.getElementById("s1").textContent=d+"/"+n;
+ document.getElementById("s2").textContent=pc+"%";
+ document.getElementById("s3").textContent=rem+" h (z "+tot+" h)";
+}
+var tb=document.getElementById("tb");
+TABS.forEach(function(t,i){var b=document.createElement("button");b.textContent=t.n;b.className=i===cur?"on":"";
+ b.onclick=function(){cur=i;flt="all";[].forEach.call(tb.children,function(x,j){x.className=j===i?"on":""});[].forEach.call(fl.children,function(x,j){x.className=j===0?"on":""});render()};tb.appendChild(b)});
+var fl=document.getElementById("fl");
+["all","S+","S","A","B","C","D"].forEach(function(f){
+ var b=document.createElement("button");b.textContent=f==="all"?"Wszystkie":"Tier "+f;b.className=f===flt?"on":"";
+ b.onclick=function(){flt=f;[].forEach.call(fl.children,function(x){x.className=""});b.className="on";render()};
+ fl.appendChild(b);
+});
+var r=document.createElement("button");r.textContent="Resetuj";r.onclick=function(){if(confirm("Wyczyścić postęp w tej zakładce?")){ST[cur]={};save();render()}};fl.appendChild(r);
+document.getElementById("ls").addEventListener("change",function(e){
+ var i=e.target.getAttribute("data-i");if(i===null)return;
+ var dn=ST[cur]=ST[cur]||{};if(e.target.checked)dn[i]=1;else delete dn[i];save();render();
+});
+render();
+</script>
+</body>
+</html>
